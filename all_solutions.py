@@ -98,7 +98,7 @@ def permute(self, nums: List[int]) -> List[List[int]]:
     
 # ---------------------------------------------------
 # 797. All Paths From Source to Target
-# backtracking, dfs, graph
+# dfs, graph
 # time: O(n^n)?, space: O(n^3)?
 
 def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
@@ -116,8 +116,103 @@ def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
 
             for next_node in graph[last_node]:
                 aux(curr+[next_node])
-
-
     aux([0])
     
     return res
+
+# ---------------------------------------------------
+# 1288. Remove Covered Intervals
+# array, sorting
+# time: O(nlogn+n), space: O(1)
+
+def removeCoveredIntervals(self, intervals: List[List[int]]) -> int:
+    
+    intervals.sort()
+
+    idx = 0
+
+    while idx<len(intervals)-1:
+
+        l = intervals[idx]
+        r = intervals[idx+1]
+
+        if l[0] < r[0]:
+            if l[1]>=r[1]:
+                intervals.pop(idx+1)
+            else:
+                idx+=1
+        elif l[0]==r[0]:
+            if l[1]<=r[1]:
+                intervals.pop(idx)
+            else:
+                print('should not be here 2.')
+        
+        else:
+            print('should not be here at all.')
+    
+    return len(intervals)
+
+# ---------------------------------------------------
+# 2265. Count Nodes Equal to Average of Subtree
+# backtracking, dfs, graph
+# time: O(n), space: O(n), n: node count in tree
+
+def averageOfSubtree(self, root: Optional[TreeNode]) -> int:
+    
+    cnt = 0
+
+    def aux(node):
+        nonlocal cnt
+
+        curr_sum = 0
+        curr_cnt = 0
+
+        if not node:
+            return (0, 0)
+        else:
+
+            l_sum, l_cnt = aux(node.left)
+            r_sum, r_cnt = aux(node.right)
+
+            curr_sum += (l_sum+r_sum+node.val)
+            curr_cnt += (l_cnt+r_cnt+1)
+
+            if int(floor(curr_sum/curr_cnt))==node.val:
+                cnt += 1
+
+            return (curr_sum, curr_cnt)
+    
+    aux(root)
+    return cnt
+
+# ---------------------------------------------------
+# 34. Find First and Last Position of Element in Sorted Array
+# BS
+# time: O(logn), space: O(logn)
+
+def searchRange(self, nums: List[int], target: int) -> List[int]:
+    
+    found = []
+
+    def aux(low, high):
+
+        if low>high:
+            return
+        
+        mid = low + (high-low)//2
+
+        if nums[mid]==target:
+            found.append(mid)
+            aux(low, mid-1)
+            aux(mid+1, high)
+        elif nums[mid]>target:
+            aux(low, mid-1)
+        else:
+            aux(mid+1, high)
+    
+    aux(0, len(nums)-1)
+
+    if len(found)==0:
+        return [-1,-1]
+    else:
+        return [min(found), max(found)]

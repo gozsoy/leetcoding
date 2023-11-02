@@ -2,6 +2,7 @@
 // time: O(V+E), space: O(V)
 // E: edge cnt, V: node cnt
 import java.util.*;
+import java.util.Collections;
 
 class Solution {
     public Node cloneGraph(Node node) {
@@ -115,5 +116,54 @@ class Solution {
         aux(curr, graph, res);
 
         return res;
+    }
+}
+
+// ---------------------------------------------------
+// 34. Find First and Last Position of Element in Sorted Array
+// BS
+// time: O(logn), space: O(logn)
+
+class Solution {
+
+    public ArrayList<Integer> found = new ArrayList<>();
+
+    public void aux(int low, int high, int[] nums, int target){
+
+        if (low>high){
+            return;
+        }
+
+        int mid = low + (high-low)/2;
+
+        if (nums[mid]==target){
+            found.add(mid);
+            aux(low, mid-1, nums, target);
+            aux(mid+1, high, nums, target);
+        }
+        else if (nums[mid]>target){
+            aux(low, mid-1, nums, target);
+        }
+        else {
+            aux(mid+1, high, nums, target);
+        }
+
+    }
+
+    public int[] searchRange(int[] nums, int target) {
+        
+        aux(0, nums.length-1, nums, target);
+        int[] found_ = found.stream().mapToInt(i -> i).toArray();
+
+        if (found_.length==0){
+            return new int[]{-1,-1};
+        }
+        else {
+            int min = Arrays.stream(found_).min().getAsInt();
+            int max = Arrays.stream(found_).max().getAsInt();
+
+            return new int[]{min, max};
+        }
+
     }
 }
