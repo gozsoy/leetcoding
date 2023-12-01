@@ -450,3 +450,149 @@ def findDifferentBinaryString(self, nums: List[str]) -> str:
             return aux(curr_str+'1')
 
     return aux('')
+
+
+# ---------------------------------------------------
+#981. Time Based Key-Value Store
+# binary search, hashmap
+# time: O(logn), space: O(n)
+
+class TimeMap:
+
+    def __init__(self):
+        
+        self.d = {}
+
+    def set(self, key: str, value: str, timestamp: int) -> None:
+        
+        if self.d.get(key):
+            self.d[key]['val'].append(value)
+            self.d[key]['t'].append(timestamp)
+        else:
+            self.d[key] = {'val':[value],'t':[timestamp]}
+
+    def get(self, key: str, timestamp: int) -> str:
+
+        temp_d = self.d.get(key)
+
+        if temp_d:
+            val_arr = temp_d['val']
+            t_arr = temp_d['t']
+
+            low, high = 0, len(t_arr)-1
+
+            while low<=high:
+
+                mid = low + (high-low)//2
+
+                if t_arr[mid]<= timestamp:
+                    low = mid+1
+                else:
+                    high = mid-1
+
+            if high==-1:
+                return ""
+            else:
+                return val_arr[high]
+        else:
+            return ""
+
+
+# ---------------------------------------------------
+# 64. Minimum Path Sum
+# dynamic programming
+# time: O(mn), space: O(mn)
+
+def minPathSum(self, grid: List[List[int]]) -> int:
+
+    m, n = len(grid), len(grid[0])
+
+    memo = [[0]*n for _ in range(m)]
+
+    for i in range(m):
+        for j in range(n):
+            
+            curr_min = float('inf')
+            
+            if i==0 and j==0:
+                curr_min = 0
+            else:
+                if i-1>=0:
+                    curr_min = memo[i-1][j]
+                if j-1>=0 and curr_min>memo[i][j-1]:
+                    curr_min = memo[i][j-1]
+            
+            memo[i][j] = curr_min + grid[i][j]
+
+    return memo[-1][-1]
+
+# ---------------------------------------------------
+# 2192. All Ancestors of a Node in a Directed Acyclic Graph
+# dynamic programming, graph traversal
+# time: O(mn), space: O(mn)
+
+def getAncestors(self, n: int, edges: List[List[int]]) -> List[List[int]]:
+    
+    # child: [ancestors]
+    d = {}
+    sink_nodes = set(range(0, n))
+
+    for edge in edges:
+
+        source, dest = edge[0], edge[1]
+        d[dest] = d.get(dest, []) + [source]
+        if source in sink_nodes:
+            sink_nodes.remove(source)
+    
+
+    answer = [[] for _ in range(n)]
+    
+    def aux(child):
+
+        ancestor_set = []
+
+        if not d.get(child):
+            return []
+        if answer[child]!=[]:
+            return answer[child]
+
+        for ancestor in d[child]:
+            ancestor_set.append(ancestor)
+            ancestor_set += aux(ancestor)
+        
+        answer[child] = sorted(set(ancestor_set))
+
+        return ancestor_set
+
+
+    for sink_node in sink_nodes:
+        aux(sink_node)
+    
+    return answer
+
+# ---------------------------------------------------
+# 325. Maximum Size Subarray Sum Equals k
+# prefix sum, hashmap
+# time: O(n), space: O(n)
+
+def maxSubArrayLen(self, nums: List[int], k: int) -> int:
+    
+    psum = 0
+    d = {} # psum:idx
+    max_len = 0
+
+    for idx in range(len(nums)):
+
+        psum += nums[idx]
+
+        if psum==k:
+            max_len = idx+1
+        
+        if psum-k in d:
+            if idx-d.get(psum-k) > max_len:
+                max_len = idx-d.get(psum-k)
+        
+        if psum not in d:
+            d[psum]=idx
+    
+    return max_len

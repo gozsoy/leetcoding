@@ -167,3 +167,64 @@ class Solution {
 
     }
 }
+
+// ---------------------------------------------------
+//981. Time Based Key-Value Store
+// binary search, hashmap
+// time: get: O(N L logM), set: O(M L)
+// space: get: O(1), set: O(M L)
+// N get() calls, M set() calls, L avg str len
+
+class TimeMap {
+
+    HashMap<String, ArrayList<Pair<Integer, String>>> d;
+
+    public TimeMap() {
+        
+        this.d = new HashMap<String, ArrayList<Pair<Integer, String>>>();
+
+    }
+    
+    public void set(String key, String value, int timestamp) {
+        
+        if (!this.d.containsKey(key)){
+            this.d.put(key, new ArrayList<Pair<Integer, String>>());
+        }
+        this.d.get(key).add(new Pair<Integer, String>(timestamp, value));
+
+    }
+    
+    public String get(String key, int timestamp) {
+        
+        if (!this.d.containsKey(key)){
+            return "";
+        }
+        else{
+            ArrayList<Pair<Integer, String>> arr = this.d.get(key);
+
+            int low = 0;
+            int high = arr.size()-1;
+
+            while (low<=high){
+
+                int mid = low + (high-low)/2;
+
+                if (arr.get(mid).getKey()<=timestamp){
+                    low = mid+1;
+                }
+                else{
+                    high = mid-1;
+                }
+            }
+
+            if (high==-1){
+                return "";
+            }
+            else{
+                return arr.get(high).getValue();
+            }
+
+        }
+
+    }
+}
