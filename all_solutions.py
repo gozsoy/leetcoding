@@ -596,3 +596,134 @@ def maxSubArrayLen(self, nums: List[int], k: int) -> int:
             d[psum]=idx
     
     return max_len
+
+
+# ---------------------------------------------------
+# 547. Number of Provinces
+# bfs, graph traversal
+# time: O(n^2), space: O(n)
+
+def findCircleNum(self, isConnected: List[List[int]]) -> int:
+    
+    visited = set()
+    num_province = 0
+    n = len(isConnected)
+
+    for idx in range(n):
+
+        if idx not in visited:
+
+            queue = [idx]
+
+            while len(queue)>0:
+
+                temp_city = queue.pop(0)
+                visited.add(temp_city)
+
+                for next_city, is_connected in enumerate(isConnected[temp_city]):
+
+                    if is_connected==1 and next_city not in visited:
+                        queue.append(next_city)
+            
+            num_province += 1
+
+    return num_province
+
+
+# ---------------------------------------------------
+# 1129. Shortest Path with Alternating Colors
+# bfs, graph traversal
+# time: O(V+E), space: O(V+E)
+
+def shortestAlternatingPaths(self, n: int, redEdges: List[List[int]], blueEdges: List[List[int]]) -> List[int]:
+    
+    visited = [[False]*2 for _ in range(n)]
+    answer = [-1]*n
+
+    def aux(edges):
+        
+        d = {}
+        
+        for edge in edges:
+
+            from_n, to_n = edge[0], edge[1]
+
+            d[from_n] = d.get(from_n, []) + [to_n]
+        
+        return d
+
+    red_d = aux(redEdges)
+    blue_d = aux(blueEdges)
+
+    queue = [[0, None, 0]]
+
+    while len(queue)>0:
+
+        temp = queue.pop(0)
+        node, last_color, path_len = temp[0], temp[1], temp[2]
+
+        if answer[node]==-1 or answer[node]>path_len:
+            answer[node]=path_len
+        
+        if last_color == 'blue' or last_color is None:
+            for red_next in red_d.get(node, []):
+                if not visited[red_next][0]:
+                    visited[red_next][0]=True
+                    queue.append([red_next, 'red', path_len+1])
+        if last_color == 'red' or last_color is None:
+            for blue_next in blue_d.get(node, []):
+                if not visited[blue_next][1]:
+                    visited[blue_next][1]=True
+                    queue.append([blue_next, 'blue', path_len+1])
+
+    return answer
+
+
+# ---------------------------------------------------
+# 2208. Minimum Operations to Halve Array Sum
+# heap, greedy, array
+# time: O(nlogn), space: O(n)
+
+def halveArray(self, nums: List[int]) -> int:
+
+    import heapq
+
+    h = [-num for num in nums]
+
+    heapq.heapify(h)
+
+    total = sum(nums)
+    curr = total
+    min_op=0
+
+    while curr>total/2:
+
+        temp_el = heapq.heappop(h)
+        curr += temp_el/2
+        heapq.heappush(h, temp_el/2)
+        min_op+=1
+
+    return min_op
+
+
+# ---------------------------------------------------
+# 221. Maximal Square
+# dynamic programming, matrix
+# time: O(m*n), space: O(1) matrix.size=(m,n)
+
+def maximalSquare(self, matrix: List[List[str]]) -> int:
+
+    m, n = len(matrix), len(matrix[0])
+    curr_max = 0
+
+    for i in range(m):
+        for j in range(n):
+
+            matrix[i][j] = int(matrix[i][j])
+
+            if i!=0 and j!=0 and matrix[i][j] == 1:
+                matrix[i][j] = min(matrix[i-1][j-1], matrix[i][j-1], matrix[i-1][j]) + 1
+            
+            curr_max = max(curr_max, matrix[i][j])
+    
+    return curr_max**2
