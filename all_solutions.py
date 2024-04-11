@@ -727,3 +727,99 @@ def maximalSquare(self, matrix: List[List[str]]) -> int:
             curr_max = max(curr_max, matrix[i][j])
     
     return curr_max**2
+
+
+# ---------------------------------------------------
+# 735. Asteroid Collision
+# stack
+# time: O(n), space: O(n)
+
+class Solution:
+
+    def aux(self, stack, curr):
+
+        if len(stack)==0:
+            stack.append(curr)
+            return False
+        else:
+            # collision
+            if stack[-1] > 0 and curr < 0:
+
+                if abs(stack[-1])==abs(curr):
+                    stack.pop()
+                    return False
+                elif abs(stack[-1])<abs(curr):
+                    stack.pop()
+                    return True
+
+            # no collision
+            else:
+                stack.append(curr)
+                return False
+
+    def asteroidCollision(self, asteroids: List[int]) -> List[int]:
+        
+        stack = []
+
+        for idx in range(len(asteroids)):
+
+            curr = asteroids[idx]
+
+            flag = True
+            while flag:
+                flag = self.aux(stack, curr)
+
+        return stack
+    
+
+# ---------------------------------------------------
+# 2352. Equal Row and Column Pairs
+# hashmap, matrix
+# time: O(n*n), space: O(n*n)
+
+class Solution:
+    def equalPairs(self, grid: List[List[int]]) -> int:
+        
+        d = {}
+        cnt = 0
+
+        for r_i in range(len(grid)):
+
+            row = tuple(grid[r_i])
+
+            if row in d:
+                d[row].append(r_i)
+            else:
+                d[row] = [r_i]
+        
+        for c_j in range(len(grid)):
+
+            column = tuple(map(lambda x: x[c_j], grid))
+
+            cnt += len(d.get(column, []))
+
+        return cnt
+
+# ---------------------------------------------------
+# 334. Increasing Triplet Subsequence
+# array
+# time: O(n), space: O(1)
+
+class Solution:
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        
+        triplet = [float('inf'), float('inf'), float('inf')]
+
+        for num in nums:
+
+            idx = 0
+            while idx<2 and triplet[idx] < num:
+                idx+=1
+            
+            if triplet[idx] > num:
+                triplet[idx] = num
+        
+        if triplet[-1] < float('inf'):
+            return True
+        else:
+            return False
